@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetFeign.Attribute;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -88,19 +89,19 @@ namespace NetFeign
     }
 
 
-    public static class SerivceProxyFactory<T>
-    {
-        public static T Create(string str, Uri remoteAddress)
-        {
-            MyRealProxy<T> realProxy = new MyRealProxy<T>();
-            return (T)realProxy.GetTransparentProxy();
-        }
-    }
+    //public static class SerivceProxyFactory<T>
+    //{
+    //    public static T Create(string str, Uri remoteAddress)
+    //    {
+    //        MyRealProxy<T> realProxy = new MyRealProxy<T>();
+    //        return (T)realProxy.GetTransparentProxy();
+    //    }
+    //}
 
-    [ServiceContract(Namespace = "http://www.artech.com/")]
+    [FeignClient(Name="测试",BaseUrl ="localhost:8080")]
     public interface ICalculator
     {
-        [OperationContract]
+       [RequestMapping("/add",RequestMethod =RequestMethod.Get)]
         double Add(double x, double y);
     }
 }

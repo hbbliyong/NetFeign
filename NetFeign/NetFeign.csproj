@@ -43,8 +43,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attribute\BaseAttribute.cs" />
+    <Compile Include="Attribute\FeignClient.cs" />
+    <Compile Include="Attribute\PathVariable.cs" />
+    <Compile Include="Attribute\RequestMapping.cs" />
+    <Compile Include="Attribute\RequestMethod.cs" />
+    <Compile Include="Attribute\RquestBody.cs" />
+    <Compile Include="FeignRealProxy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SerivceProxyFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
