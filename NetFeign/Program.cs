@@ -14,9 +14,9 @@ namespace NetFeign
     {
         static void Main(string[] args)
         {
-            ICalculator calculator = SerivceProxyFactory<ICalculator>.Create("", new Uri("http://localhost/Artech.WcfFrameworkSimulator/Calculator.aspx"));
-            double result = calculator.Add(1, 2);
-            Console.WriteLine("x + y = {2} when x = {0} and y = {1}", 1, 2, result);
+            //ICalculator calculator = SerivceProxyFactory<ICalculator>.Create("", new Uri("http://localhost/Artech.WcfFrameworkSimulator/Calculator.aspx"));
+            //var result = calculator.Add(1, 2);
+            //Console.WriteLine("x + y = {2} when x = {0} and y = {1}", 1, 2, result);
         }
 
     }
@@ -89,19 +89,7 @@ namespace NetFeign
     }
 
 
-    //public static class SerivceProxyFactory<T>
-    //{
-    //    public static T Create(string str, Uri remoteAddress)
-    //    {
-    //        MyRealProxy<T> realProxy = new MyRealProxy<T>();
-    //        return (T)realProxy.GetTransparentProxy();
-    //    }
-    //}
+ 
 
-    [FeignClient(Name="测试",BaseUrl ="localhost:8080")]
-    public interface ICalculator
-    {
-       [RequestMapping("/add",RequestMethod =RequestMethod.Get)]
-        double Add(double x, double y);
-    }
+   
 }

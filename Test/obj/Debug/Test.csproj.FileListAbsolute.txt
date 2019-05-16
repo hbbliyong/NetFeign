@@ -1,0 +1,13 @@
+C:\Users\ydzg-1\source\repos\NetFeign\Test\bin\Debug\Test.exe.config
+C:\Users\ydzg-1\source\repos\NetFeign\Test\bin\Debug\Test.exe
+C:\Users\ydzg-1\source\repos\NetFeign\Test\bin\Debug\Test.pdb
+C:\Users\ydzg-1\source\repos\NetFeign\Test\bin\Debug\NetFeign.exe
+C:\Users\ydzg-1\source\repos\NetFeign\Test\bin\Debug\Newtonsoft.Json.dll
+C:\Users\ydzg-1\source\repos\NetFeign\Test\bin\Debug\NetFeign.pdb
+C:\Users\ydzg-1\source\repos\NetFeign\Test\bin\Debug\NetFeign.exe.config
+C:\Users\ydzg-1\source\repos\NetFeign\Test\bin\Debug\Newtonsoft.Json.xml
+C:\Users\ydzg-1\source\repos\NetFeign\Test\obj\Debug\Test.csprojAssemblyReference.cache
+C:\Users\ydzg-1\source\repos\NetFeign\Test\obj\Debug\Test.csproj.CoreCompileInputs.cache
+C:\Users\ydzg-1\source\repos\NetFeign\Test\obj\Debug\Test.csproj.CopyComplete
+C:\Users\ydzg-1\source\repos\NetFeign\Test\obj\Debug\Test.exe
+C:\Users\ydzg-1\source\repos\NetFeign\Test\obj\Debug\Test.pdb

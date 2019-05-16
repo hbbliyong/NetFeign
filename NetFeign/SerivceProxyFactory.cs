@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace NetFeign
 {
-    class SerivceProxyFactory<T>
+    public class SerivceProxyFactory<T>
     {
-        public static T Create(string str, Uri remoteAddress)
+        public static T Create()
         {
             FeignRealProxy<T> realProxy = new FeignRealProxy<T>();
             return (T)realProxy.GetTransparentProxy();

@@ -5,3 +5,6 @@ C:\Users\ydzg-1\source\repos\NetFeign\NetFeign\obj\Debug\NetFeign.csprojAssembly
 C:\Users\ydzg-1\source\repos\NetFeign\NetFeign\obj\Debug\NetFeign.csproj.CoreCompileInputs.cache
 C:\Users\ydzg-1\source\repos\NetFeign\NetFeign\obj\Debug\NetFeign.exe
 C:\Users\ydzg-1\source\repos\NetFeign\NetFeign\obj\Debug\NetFeign.pdb
+C:\Users\ydzg-1\source\repos\NetFeign\NetFeign\bin\Debug\Newtonsoft.Json.dll
+C:\Users\ydzg-1\source\repos\NetFeign\NetFeign\bin\Debug\Newtonsoft.Json.xml
+C:\Users\ydzg-1\source\repos\NetFeign\NetFeign\obj\Debug\NetFeign.csproj.CopyComplete

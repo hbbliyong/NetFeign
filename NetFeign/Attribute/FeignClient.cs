@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace NetFeign.Attribute
 {
-    class FeignClient: BaseAttribute
+    public class FeignClient : BaseAttribute
     {
-        public string  Name { get; set; }
+        public string Name { get; set; }
         public string BaseUrl { get; set; }
     }
 }
