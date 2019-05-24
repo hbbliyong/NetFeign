@@ -140,34 +140,6 @@ namespace NetFeign
             return responseContent;
         }
 
-        public event EventHandler<IMethodCallMessage> AfterExecute;
-
-        public event EventHandler<IMethodCallMessage> BeforeExecute;
-
-        public event EventHandler<IMethodCallMessage> ErrorExecute;
-
-        private void OnAfterExecute(IMethodCallMessage methodCall)
-        {
-            if (AfterExecute != null)
-            {
-                AfterExecute(this, methodCall);
-            }
-        }
-
-        private void OnBeforeExecute(IMethodCallMessage methodCall)
-        {
-            if (BeforeExecute != null)
-            {
-                BeforeExecute(this, methodCall);
-            }
-        }
-
-        private void OnErrorExecute(IMethodCallMessage methodCall)
-        {
-            if (ErrorExecute != null)
-            {
-                ErrorExecute(this, methodCall);
-            }
-        }
+     
     }
 }
