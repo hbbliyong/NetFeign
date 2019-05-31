@@ -34,21 +34,48 @@ namespace NetFeign
             {
                 var baseUrl = feignClient.BaseUrl;
                 var requestParam = "";
+                object bodyData=null;
                 //获取参数
                 for (int i = 0; i < methodCall.ArgCount; i++)
                 {
-                    requestParam += $"{methodCall.GetArgName(i)}={methodCall.GetArg(i)}";
-                    if (i != methodCall.ArgCount - 1)
+                    var paramValue = methodCall.GetArg(i);
+                    if (paramValue == null || paramValue + "" == "") continue;
+                    if (paramValue?.GetType().IsPrimitive == true|| paramValue.GetType()==typeof(string))
                     {
-                        requestParam += "&";
+                        requestParam += $"{methodCall.GetArgName(i)}={paramValue}";
+                        if (i != methodCall.ArgCount - 1)
+                        {
+                            requestParam += "&";
+                        }
+                    }
+                    else
+                    {
+                        bodyData = methodCall.GetArg(i);
                     }
                 }
+                //baseUrl注意处理不带双斜杠的情况
+                if (!baseUrl.EndsWith("/")) baseUrl += "/";
                 var url = $"{baseUrl}{requestMapping.Value}";
                 if (requestParam != "") url += "?" + requestParam;
-                var result = Get(url);
+                string result = "";
+                if (requestMapping.RequestMethod == RequestMethod.Get)
+                {
+                    result = Get(url);
+                }
+                else if (requestMapping.RequestMethod == RequestMethod.Post)
+                {
+                    JsonSerializerSettings settings = new JsonSerializerSettings();
+                    settings.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
+                    var bodyParam = bodyData==null?"": JsonConvert.SerializeObject(bodyData, settings);
+                    result = Post(url, bodyParam);
+                }
+
                 var returntype = methodInfo.ReturnType;
                 //判断类型是否为基础类型
-
+                if (returntype.Name.ToLower() == "void")
+                {
+                    return new ReturnMessage(null, null, 0, null, methodCall);
+                }
                 var method = this.GetType().GetMethod("ConvertType");
                 var m1 = method.MakeGenericMethod(returntype);
                 var r1 = m1.Invoke(this, new Object[] { result });
@@ -75,7 +102,7 @@ namespace NetFeign
             {
                 return (T1)(val);
             }
-           
+
             if (tp.IsPrimitive)//是否为基本类型
             {
                 //反射获取TryParse方法
@@ -92,7 +119,7 @@ namespace NetFeign
             }
             else//为class对象需要反序列化
             {
-              return  JsonConvert.DeserializeObject<T1>(val.ToString());
+                return JsonConvert.DeserializeObject<T1>(val.ToString());
             }
             return default(T1);
         }
@@ -111,14 +138,14 @@ namespace NetFeign
             HttpWebRequest webRequest = (HttpWebRequest)HttpWebRequest.Create(url);
             webRequest.Method = "POST";
             webRequest.KeepAlive = true;
-            webRequest.ContentType = "application/soap+xml; charset=utf-8";
+            webRequest.ContentType = "application/json";
 
             string responseContent = string.Empty;
             try
             {
-                byte[] byteArray =System.Text.ASCIIEncoding.ASCII .GetBytes(paramData); //转化
+                byte[] byteArray = System.Text.ASCIIEncoding.UTF8.GetBytes(paramData); //转化
 
-                webRequest.ContentType = "application/x-www-form-urlencoded";
+               // webRequest.ContentType = "application/x-www-form-urlencoded";
                 webRequest.ContentLength = byteArray.Length;
                 using (Stream reqStream = webRequest.GetRequestStream())
                 {
@@ -127,7 +154,7 @@ namespace NetFeign
                 using (HttpWebResponse response = (HttpWebResponse)webRequest.GetResponse())
                 {
                     //在这里对接收到的页面内容进行处理
-                    using (StreamReader sr = new StreamReader(response.GetResponseStream(), Encoding.Default))
+                    using (StreamReader sr = new StreamReader(response.GetResponseStream(), Encoding.UTF8))
                     {
                         responseContent = sr.ReadToEnd().ToString();
                     }
@@ -140,6 +167,6 @@ namespace NetFeign
             return responseContent;
         }
 
-     
+
     }
 }
