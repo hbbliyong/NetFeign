@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace NetFeign.Attribute
 {
-    public class PathVariable : BaseAttribute
+    [AttributeUsage(AttributeTargets.Parameter)]
+    public class RequestBody : BaseAttribute
     {
     }
 }

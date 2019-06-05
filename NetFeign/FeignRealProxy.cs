@@ -24,7 +24,8 @@ namespace NetFeign
         {
             var methodCall = msg as IMethodCallMessage;
             var methodInfo = methodCall.MethodBase as MethodInfo;
-
+          var parameter=  methodInfo.GetParameters()[0].GetCustomAttribute<RequestBody>();
+           // Parameter.GetAttributes
             var methodAttribute = methodInfo.Attributes;
             var requestMapping = methodInfo.GetCustomAttribute<RequestMapping>();
 
@@ -34,13 +35,13 @@ namespace NetFeign
             {
                 var baseUrl = feignClient.BaseUrl;
                 var requestParam = "";
-                object bodyData=null;
+                object bodyData = null;
                 //获取参数
                 for (int i = 0; i < methodCall.ArgCount; i++)
                 {
                     var paramValue = methodCall.GetArg(i);
                     if (paramValue == null || paramValue + "" == "") continue;
-                    if (paramValue?.GetType().IsPrimitive == true|| paramValue.GetType()==typeof(string))
+                    if (paramValue?.GetType().IsPrimitive == true || paramValue.GetType() == typeof(string))
                     {
                         requestParam += $"{methodCall.GetArgName(i)}={paramValue}";
                         if (i != methodCall.ArgCount - 1)
@@ -66,7 +67,7 @@ namespace NetFeign
                 {
                     JsonSerializerSettings settings = new JsonSerializerSettings();
                     settings.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
-                    var bodyParam = bodyData==null?"": JsonConvert.SerializeObject(bodyData, settings);
+                    var bodyParam = bodyData == null ? "" : JsonConvert.SerializeObject(bodyData, settings);
                     result = Post(url, bodyParam);
                 }
 
@@ -98,12 +99,12 @@ namespace NetFeign
                 tp = tp.GetGenericArguments()[0];
             }
             //string直接返回转换
-            if (tp.Name.ToLower() == "string")
+            else if (tp.Name.ToLower() == "string")
             {
                 return (T1)(val);
             }
 
-            if (tp.IsPrimitive)//是否为基本类型
+             if (tp.IsPrimitive)//是否为基本类型
             {
                 //反射获取TryParse方法
                 var TryParse = tp.GetMethod("TryParse", BindingFlags.Public | BindingFlags.Static, Type.DefaultBinder,
@@ -145,7 +146,7 @@ namespace NetFeign
             {
                 byte[] byteArray = System.Text.ASCIIEncoding.UTF8.GetBytes(paramData); //转化
 
-               // webRequest.ContentType = "application/x-www-form-urlencoded";
+                // webRequest.ContentType = "application/x-www-form-urlencoded";
                 webRequest.ContentLength = byteArray.Length;
                 using (Stream reqStream = webRequest.GetRequestStream())
                 {
@@ -162,7 +163,7 @@ namespace NetFeign
             }
             catch (Exception ex)
             {
-                return ex.Message;
+                throw ex;
             }
             return responseContent;
         }

@@ -48,10 +48,11 @@
   <ItemGroup>
     <Compile Include="Attribute\BaseAttribute.cs" />
     <Compile Include="Attribute\FeignClient.cs" />
-    <Compile Include="Attribute\PathVariable.cs" />
+    <Compile Include="Attribute\Parameter\PathVariable.cs" />
+    <Compile Include="Attribute\Parameter\RequestParam.cs" />
     <Compile Include="Attribute\RequestMapping.cs" />
     <Compile Include="Attribute\RequestMethod.cs" />
-    <Compile Include="Attribute\RquestBody.cs" />
+    <Compile Include="Attribute\Parameter\RequestBody.cs" />
     <Compile Include="FeignRealProxy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -61,5 +62,6 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
