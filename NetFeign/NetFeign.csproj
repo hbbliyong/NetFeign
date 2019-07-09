@@ -5,13 +5,14 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{FA89BE14-B9DE-4226-B8D0-85D35724B36F}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <RootNamespace>NetFeign</RootNamespace>
     <AssemblyName>NetFeign</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -32,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -48,6 +52,11 @@
   <ItemGroup>
     <Compile Include="Attribute\BaseAttribute.cs" />
     <Compile Include="Attribute\FeignClient.cs" />
+    <Compile Include="Attribute\HttpGetAttribute.cs" />
+    <Compile Include="Attribute\HttpMethodAttribute.cs" />
+    <Compile Include="Attribute\HttpDeleteAttribute.cs" />
+    <Compile Include="Attribute\HttpPutAttribute.cs" />
+    <Compile Include="Attribute\HttpPostAttribute.cs" />
     <Compile Include="Attribute\Parameter\PathVariable.cs" />
     <Compile Include="Attribute\Parameter\RequestParam.cs" />
     <Compile Include="Attribute\RequestMapping.cs" />
@@ -56,7 +65,7 @@
     <Compile Include="FeignRealProxy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SerivceProxyFactory.cs" />
+    <Compile Include="ServiceProxyFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 using System.Runtime.Remoting.Proxies;
@@ -22,72 +23,80 @@ namespace NetFeign
 
         public override IMessage Invoke(IMessage msg)
         {
-            var methodCall = msg as IMethodCallMessage;
-            var methodInfo = methodCall.MethodBase as MethodInfo;
-          var parameter=  methodInfo.GetParameters()[0].GetCustomAttribute<RequestBody>();
-           // Parameter.GetAttributes
-            var methodAttribute = methodInfo.Attributes;
-            var requestMapping = methodInfo.GetCustomAttribute<RequestMapping>();
-
-            var type = methodInfo.DeclaringType;
-            var feignClient = type.GetCustomAttribute<FeignClient>();
-            try
+            if (msg is IMethodCallMessage methodCall)
             {
-                var baseUrl = feignClient.BaseUrl;
-                var requestParam = "";
-                object bodyData = null;
-                //获取参数
-                for (int i = 0; i < methodCall.ArgCount; i++)
+                var methodInfo = methodCall.MethodBase as MethodInfo;
+
+                var requestMapping = methodInfo.GetCustomAttribute<HttpMethodAttribute>();
+
+                var type = methodInfo.DeclaringType;
+                var feignClient = type.GetCustomAttribute<FeignClient>();
+                try
                 {
-                    var paramValue = methodCall.GetArg(i);
-                    if (paramValue == null || paramValue + "" == "") continue;
-                    if (paramValue?.GetType().IsPrimitive == true || paramValue.GetType() == typeof(string))
+                    var baseUrl = feignClient.BaseUrl;
+                    var requestParam = "";
+                    object bodyData = null;
+                    //获取参数
+                    for (int i = 0; i < methodCall.ArgCount; i++)
                     {
-                        requestParam += $"{methodCall.GetArgName(i)}={paramValue}";
-                        if (i != methodCall.ArgCount - 1)
+                        var paramValue = methodCall.GetArg(i);
+                        if (paramValue == null || paramValue + "" == "") continue;
+                        if (paramValue?.GetType().IsPrimitive == true || paramValue is string)
                         {
-                            requestParam += "&";
+                            requestParam += $"{methodCall.GetArgName(i)}={paramValue}";
+                            if (i != methodCall.ArgCount - 1)
+                            {
+                                requestParam += "&";
+                            }
+                        }
+                        else
+                        {
+                            bodyData = methodCall.GetArg(i);
                         }
                     }
-                    else
+                    //baseUrl注意处理不带双斜杠的情况
+                    if (!baseUrl.EndsWith("/")) baseUrl += "/";
+                    var url = new Uri(new Uri(baseUrl), requestMapping.Path);
+                    if (requestParam != "") url = new Uri(url, "?" + requestParam);
+                    string result = "";
+
+                    JsonSerializerSettings settings = new JsonSerializerSettings
                     {
-                        bodyData = methodCall.GetArg(i);
-                    }
-                }
-                //baseUrl注意处理不带双斜杠的情况
-                if (!baseUrl.EndsWith("/")) baseUrl += "/";
-                var url = $"{baseUrl}{requestMapping.Value}";
-                if (requestParam != "") url += "?" + requestParam;
-                string result = "";
-                if (requestMapping.RequestMethod == RequestMethod.Get)
-                {
-                    result = Get(url);
-                }
-                else if (requestMapping.RequestMethod == RequestMethod.Post)
-                {
-                    JsonSerializerSettings settings = new JsonSerializerSettings();
-                    settings.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
+                        ContractResolver =
+                            new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
+                    };
                     var bodyParam = bodyData == null ? "" : JsonConvert.SerializeObject(bodyData, settings);
-                    result = Post(url, bodyParam);
+
+                    HttpRequestMessage httpRequestMessage = new HttpRequestMessage(requestMapping.Method, url)
+                    {
+                        Content = new StringContent(bodyParam)
+                    };
+                    httpRequestMessage.Content.Headers.Add("content-type", "application/json");
+                    HttpClient client = new HttpClient();
+                    var response = client.SendAsync(httpRequestMessage).Result;
+                    result = response.Content.ReadAsStringAsync().Result;
+
+
+                    var returntype = methodInfo.ReturnType;
+                    //判断类型是否为基础类型
+                    if (returntype.Name.ToLower() == "void")
+                    {
+                        return new ReturnMessage(null, null, 0, null, methodCall);
+                    }
+                    var method = this.GetType().GetMethod("ConvertType");
+                    var m1 = method.MakeGenericMethod(returntype);
+                    var r1 = m1.Invoke(this, new Object[] { result });
+                    return new ReturnMessage(r1, null, 0, null, methodCall);
                 }
 
-                var returntype = methodInfo.ReturnType;
-                //判断类型是否为基础类型
-                if (returntype.Name.ToLower() == "void")
+                catch (Exception ex)
                 {
-                    return new ReturnMessage(null, null, 0, null, methodCall);
+                    //if (filter(methodCall.InArgs)) OnErrorExecute(methodCall);
+                    return new ReturnMessage(ex, methodCall);
                 }
-                var method = this.GetType().GetMethod("ConvertType");
-                var m1 = method.MakeGenericMethod(returntype);
-                var r1 = m1.Invoke(this, new Object[] { result });
-                return new ReturnMessage(r1, null, 0, null, methodCall);
 
             }
-            catch (Exception ex)
-            {
-                //if (filter(methodCall.InArgs)) OnErrorExecute(methodCall);
-                return new ReturnMessage(ex, methodCall);
-            }
+            return new ReturnMessage(new Exception("类型不正确"), null);
         }
         public T1 ConvertType<T1>(object val)
         {
@@ -104,7 +113,7 @@ namespace NetFeign
                 return (T1)(val);
             }
 
-             if (tp.IsPrimitive)//是否为基本类型
+            if (tp.IsPrimitive)//是否为基本类型
             {
                 //反射获取TryParse方法
                 var TryParse = tp.GetMethod("TryParse", BindingFlags.Public | BindingFlags.Static, Type.DefaultBinder,

@@ -87,9 +87,4 @@ namespace NetFeign
             }
         }
     }
-
-
- 
-
-   
 }
