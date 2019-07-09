@@ -65,13 +65,15 @@ namespace NetFeign
                         ContractResolver =
                             new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
                     };
-                    var bodyParam = bodyData == null ? "" : JsonConvert.SerializeObject(bodyData, settings);
 
-                    HttpRequestMessage httpRequestMessage = new HttpRequestMessage(requestMapping.Method, url)
+                    HttpRequestMessage httpRequestMessage = new HttpRequestMessage(requestMapping.Method, url);
+                    if (bodyData != null)
                     {
-                        Content = new StringContent(bodyParam)
-                    };
-                    httpRequestMessage.Content.Headers.Add("content-type", "application/json");
+                        var bodyParam = JsonConvert.SerializeObject(bodyData, settings);
+                        httpRequestMessage.Content = new StringContent(bodyParam, Encoding.UTF8, "application/json");
+                    }
+
+                    //  httpRequestMessage.Content.Headers.Add("content-type", "application/json");
                     HttpClient client = new HttpClient();
                     var response = client.SendAsync(httpRequestMessage).Result;
                     result = response.Content.ReadAsStringAsync().Result;
